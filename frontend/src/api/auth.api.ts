@@ -11,7 +11,6 @@ export interface IRegisterPayload {
   email: string;
   password: string;
   companyName?: string;
-  role?: string;
 }
 
 export interface IAuthResponse {

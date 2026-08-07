@@ -13,7 +13,7 @@ export class AuthController {
    */
   static async register(req: Request, res: Response) {
     try {
-      const { name, email, password, companyName, role } = req.body;
+      const { name, email, password, companyName } = req.body;
 
       if (!name || !email || !password) {
         return res
@@ -27,25 +27,22 @@ export class AuthController {
         return res.status(400).json({ error: 'E-mail já está cadastrado no sistema (Email is already registered)' });
       }
 
-      let companyIdToAssign: string | undefined;
-      const targetRole: UserRole = role && ['superadmin', 'admin', 'user'].includes(role) ? role : 'admin';
+      // O registro público é estritamente restrito a 'admin' com nova empresa dedicada (Prevents privilege escalation)
+      const targetRole: UserRole = 'admin';
 
-      // Se for o registro de um novo Admin ou empresa (Create new tenant company if registering admin)
-      if (targetRole === 'admin') {
-        const nameForCompany = companyName || `${name} Store`;
-        const slug =
-          nameForCompany
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '') +
-          '-' +
-          Date.now();
-        const newCompany = await Company.create({
-          name: nameForCompany,
-          slug,
-        });
-        companyIdToAssign = newCompany._id.toString();
-      }
+      const nameForCompany = companyName || `${name} Store`;
+      const slug =
+        nameForCompany
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '') +
+        '-' +
+        Date.now();
+      const newCompany = await Company.create({
+        name: nameForCompany,
+        slug,
+      });
+      const companyIdToAssign = newCompany._id.toString();
 
       // Hash de senha com bcrypt (Bcrypt Password Hashing)
       const salt = await bcrypt.genSalt(10);

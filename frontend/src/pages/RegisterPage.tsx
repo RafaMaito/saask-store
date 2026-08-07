@@ -35,7 +35,6 @@ export const RegisterPage: React.FC = () => {
         email,
         password,
         companyName,
-        role: 'admin',
       });
 
       setAuth(response.user, response.token);

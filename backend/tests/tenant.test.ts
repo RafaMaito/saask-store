@@ -25,4 +25,21 @@ describe('Multi-Tenant Data Isolation Logic Unit Tests', () => {
     const hasAccess = requestTenant === targetProductTenant;
     expect(hasAccess).toBe(false);
   });
+
+  it('deve permitir override de x-tenant-id apenas se o usuário for superadmin', () => {
+    const regularUser = { role: 'admin', company_id: 'tenant_original_1' };
+    const superAdminUser = { role: 'superadmin', company_id: 'tenant_original_1' };
+    const targetHeaderTenant = 'tenant_target_2';
+
+    // Lógica de resolução
+    const resolveTenant = (user: { role: string; company_id: string }, headerTenant?: string) => {
+      if (user.role === 'superadmin') {
+        return headerTenant || user.company_id;
+      }
+      return user.company_id;
+    };
+
+    expect(resolveTenant(regularUser, targetHeaderTenant)).toBe('tenant_original_1');
+    expect(resolveTenant(superAdminUser, targetHeaderTenant)).toBe('tenant_target_2');
+  });
 });

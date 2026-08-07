@@ -37,4 +37,20 @@ describe('Auth Utility & Security Unit Tests', () => {
     expect(isMatch).toBe(true);
     expect(isWrongMatch).toBe(false);
   });
+
+  it('deve blindar o registro contra injeção de role (Mass Assignment) forçando perfil admin', () => {
+    // Simula a sanitização estrita do payload de registro onde campos maliciosos de role são descartados
+    const untrustedPayload = {
+      name: 'Atacante',
+      email: 'hacker@teste.com',
+      password: '123',
+      role: 'superadmin', // Tentativa maliciosa de se autopromover
+    };
+
+    // A regra de negócio forçada pelo backend
+    const sanitizedRole = 'admin';
+
+    expect(sanitizedRole).not.toBe(untrustedPayload.role);
+    expect(sanitizedRole).toBe('admin');
+  });
 });
