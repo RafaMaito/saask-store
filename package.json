@@ -1,0 +1,26 @@
+{
+  "name": "Saask-store-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mini SaaS Multi-tenant com Agente de IA Multi-Provedor (Multi-Tenant SaaS Platform with Multi-Provider AI Agent)",
+  "type": "module",
+  "scripts": {
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "npm --prefix backend install",
+    "setup:frontend": "npm --prefix frontend install",
+    "up": "docker compose up --build -d && node scripts/info.js",
+    "down": "docker compose down",
+    "docker:up": "npm run up",
+    "docker:down": "npm run down",
+    "seed": "docker exec saas_ai_backend node dist/utils/seed.js",
+    "seed:local": "npm --prefix backend run seed",
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build && node scripts/postbuild.js",
+    "start": "concurrently \"npm --prefix backend start\" \"npm --prefix frontend run preview\"",
+    "test": "npm --prefix backend run test",
+    "info": "node scripts/info.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
